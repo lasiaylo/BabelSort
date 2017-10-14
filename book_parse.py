@@ -29,3 +29,14 @@ def text_to_dict(text):
             word_dictionary[word] = word_dictionary[word] + 1
         else:
             word_dictionary[word] = 1
+
+def get_xhtml_fnames(directory):
+    xhtml_list = []
+    for file in os.listdir(os.path.join(curr_dir, directory)):
+        if file.endswith(".xhtml"):
+            xhtml_list.append(file)
+    # gets rid of titlepage.xhtml because that file doesn't have words
+    xhtml_list = xhtml_list[:len(xhtml_list) - 1]
+    return xhtml_list
+
+print(get_xhtml_fnames("Extracted Files"))
