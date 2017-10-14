@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 word_dictionary = {}
 curr_dir = os.getcwd()
 
+<<<<<<< HEAD
 def book_parse(fname):
     print(fname)
     book_text = []
@@ -19,6 +20,9 @@ def book_parse(fname):
         book_text = book_text + chapter_text
 
     return book_text
+=======
+# def book_parse(fname):
+>>>>>>> parent of 87548a0... book_parse
 
 def extract_epub(fname, end_dir):
     with zipfile.ZipFile(fname, "r") as myzip:
@@ -49,6 +53,11 @@ def get_fnames(directory, ftype):
     return ftype_list
 
 # print(get_fnames("Extracted Files", ".xhtml"))
+<<<<<<< HEAD
 # book_list = get_fnames("", ".epub")
 # print(book_list)
 print(book_parse("[Linda_Nagata]_The_Bohr_Maker(BookZZ.org).epub"))
+=======
+book_list = get_fnames("", ".epub")
+print(book_list)
+>>>>>>> parent of 87548a0... book_parse
