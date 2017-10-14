@@ -7,11 +7,9 @@ curr_dir = os.getcwd()
 
 # def book_parse(fname):
 
-def extract_epub(fname):
+def extract_epub(fname, end_dir):
     with zipfile.ZipFile(fname, "r") as myzip:
-        myzip.extractall(os.path.join(curr_dir, "Extracted Files"))
-
-extract_epub("[Linda_Nagata]_The_Bohr_Maker(BookZZ.org).epub")
+        myzip.extractall(os.path.join(curr_dir, end_dir))
 
 def extract_xhtml(fname):
     with open(fname) as html_fp:
@@ -37,4 +35,6 @@ def get_fnames(directory, ftype):
             ftype_list.append(file)
     return ftype_list
 
-print(get_fnames("Extracted Files", ".xhtml"))
+# print(get_fnames("Extracted Files", ".xhtml"))
+book_list = get_fnames("", ".epub")
+print(book_list)
