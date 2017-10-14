@@ -7,18 +7,25 @@ curr_dir = os.getcwd()
 
 def book_parse(fname):
     print(fname)
+    book_text = []
     base_fname = os.path.splitext(fname)[0]
     # creates a folder with name of book
     extract_epub(fname, base_fname)
     chapter_list = get_fnames(base_fname, ".xhtml")
-    return chapter_list
+
+
+    for chapter in chapter_list:
+        chapter_text = extract_xhtml(chapter)
+        book_text = book_text + chapter_text
+
+    return book_text
 
 def extract_epub(fname, end_dir):
     with zipfile.ZipFile(fname, "r") as myzip:
         myzip.extractall(os.path.join(curr_dir, end_dir))
 
 def extract_xhtml(fname):
-    with open(fname) as html_fp:
+    with open(os.path.join(/Users/murtazaHusain/Documents/GitHub/BabelSort/[Linda_Nagata]_The_Bohr_Maker(BookZZ.org), fname)) as html_fp:
         chapter = BeautifulSoup(html_fp, "html.parser")
 
     raw_text = chapter.get_text()
@@ -44,4 +51,4 @@ def get_fnames(directory, ftype):
 # print(get_fnames("Extracted Files", ".xhtml"))
 # book_list = get_fnames("", ".epub")
 # print(book_list)
-# print(book_parse("[Linda_Nagata]_The_Bohr_Maker(BookZZ.org).epub"))
+print(book_parse("[Linda_Nagata]_The_Bohr_Maker(BookZZ.org).epub"))
