@@ -6,18 +6,37 @@ Created on Oct 14, 2017
 import Learn_Simple
 import book_parse
 import tf_glove
+import numpy
 
 parser = book_parse.BookParser()
 fileNames = parser.get_fnames('Data Sets\Fantasy','.epub')
-
+ 
 lines = parser.book_parse(fileNames[0])
-lines = parser.list_parser(lines, 10)
-model = tf_glove.GloVeModel(embedding_size=10,context_size=2)
+lines = parser.list_parser(lines, 1000)
+lines = lines[0:50]
+ 
+model = tf_glove.GloVeModel(embedding_size=250,context_size=4)
 model.fit_to_corpus(lines)
-model.train(num_epochs=20)
-print(model.embeddings)
-model.generate_tsne()
+model.train(num_epochs=5)
+trainInput = model.embeddings
+trainInput = trainInput[0:3000]
+trainGenre = [[0,1]] * 3000
+# 
 
-
-
-# learn = Learn_Simple.Learn([3],[2],[3],[2])
+#  
+lines2 = parser.book_parse(fileNames[1])
+lines2 = parser.list_parser(lines2, 1000)
+lines2 = lines2[0:50]
+model2 = tf_glove.GloVeModel(embedding_size=250,context_size=2)
+model2.fit_to_corpus(lines2)
+model2.train(num_epochs=5)
+testInput = model2.embeddings
+testInput = testInput[0:3000]
+testGenre = [[0,1]] * 3000
+print("now starting formal training")
+# trainInput = numpy.array([[0,1,2,3,4],[0,1,4,4,4]])
+# trainGenre = numpy.array([[0,1],[0,1]])
+# testInput = numpy.array([[0,1,2,3,4],[0,1,2,3,4]])
+# testGenre = numpy.array([[0,1],[0,1]])
+# 
+learn = Learn_Simple.Learn(trainInput,trainGenre,testInput,testGenre)
