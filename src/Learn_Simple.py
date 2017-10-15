@@ -10,13 +10,14 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 
+
 class Learn(object):
     '''
     Simple neural network - one layer
     '''
 
 
-    def __init__(self, trainTexts,trainGenres,testTexts,testGenres):
+    def __init__(self):
         '''
         Constructor
         '''
@@ -24,45 +25,50 @@ class Learn(object):
         #parameters
         CHUNKLENGTH = 250
         NUMBEROFGENRES = 5
-        trainTexts = np.array(trainTexts)
-        trainGenres = np.array(trainGenres)
-        testTexts = np.array(testTexts)
-        testGenres = np.array(testGenres)
-        
-        inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
-        nodeWeight = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
-        nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
+
+        self.inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
+        self.nodeWeights = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
+        self.nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
 
         # y = x * W + b
-        actualOutcome = (tf.matmul(inputSample,nodeWeight) + nodeBias)
+        self.actualOutcome = (tf.matmul(self.inputSample,self.nodeWeights) + self.nodeBias)
         
-        expectedOutcome = tf.placeholder(tf.float32, [None, NUMBEROFGENRES])
+        self.expectedOutcome = tf.placeholder(tf.float32, [None, NUMBEROFGENRES])
         
-        
-        crossEntropy = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(labels=expectedOutcome,logits=actualOutcome))
-        
-        trainingStep = tf.train.GradientDescentOptimizer(0.5).minimize(crossEntropy)
-        
-        session = tf.InteractiveSession()
+        self.session = tf.InteractiveSession()
         tf.global_variables_initializer().run()
         
+    def train(self, trainTexts,trainGenres):  
+        self.trainTexts = np.array(trainTexts)
+        self.trainGenres = np.array(trainGenres)
+  
+        
+        self.crossEntropy = tf.reduce_mean(
+        tf.nn.softmax_cross_entropy_with_logits(labels=self.expectedOutcome,logits=self.actualOutcome))
+        
+        trainingStep = tf.train.GradientDescentOptimizer(0.5).minimize(self.crossEntropy)  
+        
         # Train
-        for step in range(5000):
+        print(len(trainTexts))
+        for step in range(len(trainTexts)):
             sampleBatch = [trainTexts[step]]
             genreBatch = [trainGenres[step]]
 #             if (step%200 == 0):
 #                 correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
 #                 accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
 #                 print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
-            session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
+            self.session.run(trainingStep, feed_dict={self.inputSample: sampleBatch,self.expectedOutcome:genreBatch})
         
       
 
-        # Testing
-        correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
+    def test(self,testTexts,testGenres):
+        self.testTexts = np.array(testTexts)
+        self.testGenres = np.array(testGenres)
+        correctPrediction = tf.equal(tf.argmax(self.actualOutcome,1), tf.argmax(self.expectedOutcome,1))
         accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
-        print(session.run(nodeWeight))
-        print(session.run(nodeBias))
-        print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
+        print(self.session.run(accuracy, feed_dict={self.inputSample: testTexts,self.expectedOutcome: testGenres}))
         
+    def getNodeWeight(self):
+        return (self.session.run(self.nodeWeights))
+    def getNodeBias(self):
+        return (self.session.run(self.getNodeBias))
