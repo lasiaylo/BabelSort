@@ -9,7 +9,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
-
+import random
 
 class Learn(object):
     '''
@@ -17,57 +17,57 @@ class Learn(object):
     '''
 
 
-    def __init__(self):
+    def __init__(self, trainTexts,trainGenres,testInput,testGenre):
         '''
         Constructor
         '''
         #Graph input
         #parameters
-        CHUNKLENGTH = 250
+        CHUNKLENGTH = 1000
         NUMBEROFGENRES = 5
-
-        self.inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
-        self.nodeWeights = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
-        self.nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
+        trainTexts = np.array(trainTexts)
+        trainGenres = np.array(trainGenres)
+    
+        
+        inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
+        nodeWeight = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
+        nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
 
         # y = x * W + b
-        self.actualOutcome = (tf.matmul(self.inputSample,self.nodeWeights) + self.nodeBias)
+        actualOutcome = (tf.matmul(inputSample,nodeWeight) + nodeBias)
         
-        self.expectedOutcome = tf.placeholder(tf.float32, [None, NUMBEROFGENRES])
+        expectedOutcome = tf.placeholder(tf.float32, [None, NUMBEROFGENRES])
         
-        self.session = tf.InteractiveSession()
+        
+        crossEntropy = tf.reduce_mean(
+            tf.nn.softmax_cross_entropy_with_logits(labels=expectedOutcome,logits=actualOutcome))
+        
+        trainingStep = tf.train.GradientDescentOptimizer(.5).minimize(crossEntropy)
+        
+        session = tf.InteractiveSession()
+        
         tf.global_variables_initializer().run()
-        
-    def train(self, trainTexts,trainGenres):  
-        self.trainTexts = np.array(trainTexts)
-        self.trainGenres = np.array(trainGenres)
-  
-        
-        self.crossEntropy = tf.reduce_mean(
-        tf.nn.softmax_cross_entropy_with_logits(labels=self.expectedOutcome,logits=self.actualOutcome))
-        
-        trainingStep = tf.train.GradientDescentOptimizer(0.5).minimize(self.crossEntropy)  
         
         # Train
         for step in range(len(trainTexts)):
-            sampleBatch = [self.trainTexts[step]]
-            genreBatch = [self.trainGenres[step]]
+#             step =random.randint(0,len(trainTexts)-1)
+            sampleBatch = [trainTexts[step]]
+            genreBatch = [trainGenres[step]]
 #             if (step%200 == 0):
 #                 correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
 #                 accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
 #                 print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
-            self.session.run(trainingStep, feed_dict={self.inputSample: sampleBatch,self.expectedOutcome:genreBatch})
+            session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
         
-      
-
-    def test(self,testTexts,testGenres):
-        self.testTexts = np.array(testTexts)
-        self.testGenres = np.array(testGenres)
-        correctPrediction = tf.equal(tf.argmax(self.actualOutcome,1), tf.argmax(self.expectedOutcome,1))
+#         self.session = session
+#         self.actualOutcome = actualOutcome
+#         self.expectedOutcome = expectedOutcome
+#         self.inputSample = inputSample
+        
+#     def test(self,testTexts,testGenres):
+        testTexts = np.array(testInput)
+        testGenres = np.array(testGenre)
+        correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
         accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
-        print(self.session.run(accuracy, feed_dict={self.inputSample: testTexts,self.expectedOutcome: testGenres}))
+        print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
         
-    def getNodeWeight(self):
-        return (self.session.run(self.nodeWeights))
-    def getNodeBias(self):
-        return (self.session.run(self.getNodeBias))
