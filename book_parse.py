@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 class BookParser(object):
     def __init__(self):
+        self.curr_dir = os.getcwd()
+
 
     def book_parse(fname):
         book = open_book(fname)
@@ -29,7 +31,8 @@ class BookParser(object):
 
     def get_fnames(directory, ftype):
         ftype_list = []
-        for file in os.listdir(os.path.join(curr_dir, directory)):
+        babel_dir = self.curr_dir.rsplit("/", 1)[0]
+        for file in os.listdir(os.path.join(babel_dir, directory)):
             if file.endswith(ftype):
                 ftype_list.append(file)
         return ftype_list
