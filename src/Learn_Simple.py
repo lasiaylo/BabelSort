@@ -23,8 +23,7 @@ class Learn(object):
         #Graph input
         #parameters
         CHUNKLENGTH = 250
-        NUMBEROFGENRES = 2
-        
+        NUMBEROFGENRES = 5
         trainTexts = np.array(trainTexts)
         trainGenres = np.array(trainGenres)
         testTexts = np.array(testTexts)
@@ -34,11 +33,11 @@ class Learn(object):
         nodeWeight = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
         nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
 
-        
         # y = x * W + b
         actualOutcome = (tf.matmul(inputSample,nodeWeight) + nodeBias)
         
         expectedOutcome = tf.placeholder(tf.float32, [None, NUMBEROFGENRES])
+        
         
         crossEntropy = tf.reduce_mean(
             tf.nn.softmax_cross_entropy_with_logits(labels=expectedOutcome,logits=actualOutcome))
@@ -49,13 +48,13 @@ class Learn(object):
         tf.global_variables_initializer().run()
         
         # Train
-        for step in range(1000):
+        for step in range(5000):
             sampleBatch = [trainTexts[step]]
             genreBatch = [trainGenres[step]]
-            if (step % 100 == 0):
-                    correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
-                    accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
-                    print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
+#             if (step%200 == 0):
+#                 correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
+#                 accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
+#                 print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
             session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
         
       
@@ -63,5 +62,7 @@ class Learn(object):
         # Testing
         correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
         accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
+        print(session.run(nodeWeight))
+        print(session.run(nodeBias))
         print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
         
