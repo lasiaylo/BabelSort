@@ -30,7 +30,7 @@ class Learn(object):
         testTexts = np.array(testTexts)
         testGenres = np.array(testGenres)
         
-        inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
+        inputSample = tf.placeholder(tf.float32, [2, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
         nodeWeight = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
         nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
 
@@ -53,7 +53,7 @@ class Learn(object):
         for step in range(1):
             sampleBatch = trainTexts[step]
             genreBatch = trainGenres[step]
-            session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
+#             session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
         
         print("bruh")
 
