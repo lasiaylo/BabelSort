@@ -22,15 +22,15 @@ class Learn(object):
         '''
         #Graph input
         #parameters
-        CHUNKLENGTH = 100
-        NUMBEROFGENRES = 4
+        CHUNKLENGTH = 250
+        NUMBEROFGENRES = 2
         
         trainTexts = np.array(trainTexts)
         trainGenres = np.array(trainGenres)
         testTexts = np.array(testTexts)
         testGenres = np.array(testGenres)
         
-        inputSample = tf.placeholder(tf.float32, [2, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
+        inputSample = tf.placeholder(tf.float32, [None, CHUNKLENGTH], name = 'sup') #array size of unlimited, each array size is textLength
         nodeWeight = tf.Variable(tf.zeros([CHUNKLENGTH,NUMBEROFGENRES])) 
         nodeBias = tf.Variable(tf.zeros([NUMBEROFGENRES]))
 
@@ -49,17 +49,19 @@ class Learn(object):
         tf.global_variables_initializer().run()
         
         # Train
-       
-        for step in range(1):
-            sampleBatch = trainTexts[step]
-            genreBatch = trainGenres[step]
-#             session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
+        for step in range(1000):
+            sampleBatch = [trainTexts[step]]
+            genreBatch = [trainGenres[step]]
+            if (step % 100 == 0):
+                    correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
+                    accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
+                    print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
+            session.run(trainingStep, feed_dict={inputSample: sampleBatch,expectedOutcome:genreBatch})
         
-        print("bruh")
+      
 
         # Testing
         correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
         accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
-        
         print(session.run(accuracy, feed_dict={inputSample: testTexts,expectedOutcome: testGenres}))
         
