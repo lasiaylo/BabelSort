@@ -11,7 +11,7 @@ class BookParser(object):
         self.curr_dir = os.getcwd()
 
 
-    def book_parse(self,fname):
+    def book_parse(self, fname):
         book = open_book(fname)
         lines = convert_epub_to_lines(book)
         lines = ''.join(lines)
@@ -19,17 +19,17 @@ class BookParser(object):
         lines = lines.split()
         return lines
 
-    def cleanhtml(self,raw_html):
+    def cleanhtml(self, raw_html):
         cleanr = re.compile('<.*?>')
         cleantext = re.sub(cleanr, '', raw_html)
         return cleantext
 
-    def remove_punc(self,text):
+    def remove_punc(self, text):
         exclude = set(string.punctuation)
         text = ''.join(char for char in text if char not in exclude)
         return text
 
-    def get_fnames(self,directory, ftype):
+    def get_fnames(self, directory, ftype):
         ftype_list = []
         babel_dir = self.curr_dir.rsplit("\\", 1)[0]
         babel_dir = os.path.join(babel_dir,directory)
@@ -38,3 +38,20 @@ class BookParser(object):
                 ftype_list.append(file)
         print(babel_dir)
         return ftype_list
+
+    def list_parser(self, word_list, group_size):
+        grouped_words = []
+        temp_group = [""] * group_size
+        count = 0
+
+        for word in word_list:
+            if count == group_size:
+                count = 0
+                grouped_words.append(temp_group)
+                temp_group = [""] * group_size
+            temp_group[count] = word
+            count = count + 1
+
+        grouped_words.append(temp_group)
+
+        return grouped_words
