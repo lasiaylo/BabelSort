@@ -12,10 +12,11 @@ class BookParser(object):
 
 
     def book_parse(self, fname):
+        os.chdir(self.babel_dir)
         book = open_book(fname)
         lines = convert_epub_to_lines(book)
         lines = ''.join(lines)
-        lines = self.remove_punc(self.leanhtml(lines))
+        lines = self.remove_punc(self.cleanhtml(lines))
         lines = lines.split()
         return lines
 
@@ -36,7 +37,7 @@ class BookParser(object):
         for file in os.listdir(babel_dir):
             if file.endswith(ftype):
                 ftype_list.append(file)
-        print(babel_dir)
+        self.babel_dir = babel_dir
         return ftype_list
 
     def list_parser(self, word_list, group_size):
