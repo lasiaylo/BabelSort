@@ -49,10 +49,9 @@ class Learn(object):
         trainingStep = tf.train.GradientDescentOptimizer(0.5).minimize(self.crossEntropy)  
         
         # Train
-        print(len(trainTexts))
         for step in range(len(trainTexts)):
-            sampleBatch = [trainTexts[step]]
-            genreBatch = [trainGenres[step]]
+            sampleBatch = [self.trainTexts[step]]
+            genreBatch = [self.trainGenres[step]]
 #             if (step%200 == 0):
 #                 correctPrediction = tf.equal(tf.argmax(actualOutcome,1), tf.argmax(expectedOutcome,1))
 #                 accuracy = tf.reduce_mean(tf.cast(correctPrediction, tf.float32))
